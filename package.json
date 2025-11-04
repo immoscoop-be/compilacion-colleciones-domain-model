@@ -1,0 +1,30 @@
+{
+  "name": "compilacion-colleciones-domain-model",
+  "version": "1.0.0",
+  "description": "domain models including compilations of compilacion",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "node ./src/build.js",
+    "validate": "node ./src/validateDomainModel.js",
+    "clean": "rm -rf build/*",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "vitest": "^1.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/immoscoop-be/compilacion-colleciones-domain-model.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/immoscoop-be/compilacion-colleciones-domain-model/issues"
+  },
+  "homepage": "https://github.com/immoscoop-be/compilacion-colleciones-domain-model#readme"
+}
