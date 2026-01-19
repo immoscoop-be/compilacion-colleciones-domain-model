@@ -1,0 +1,41 @@
+{
+    "meta": {
+       "domain": "identity",
+        "version": "0.1.0",
+        "description": "Domain vocabulary for canonical subjects and identity resolution across channels."
+    },
+    "entities": {
+        "subject": {
+            "description": "An Canonical person/profile/individual or entity that can be identified across channels.",
+            "identifiers": {
+                "subjectId": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Canonical subject identifier."
+                }
+            },
+            "actions": {
+                "identified": {
+                    "description": "Subject has been identified.",
+                    "optionalContext": [
+                        "identifierType", 
+                        "identifierValue"
+                    ]
+                }
+            }
+        }
+    },
+    "actors": [
+        "subject"
+    ],
+    "contexts": {
+        "identifierType": { 
+            "description": "email/phone/customerId/deviceId/...", 
+            "type": "string" 
+        },
+        "identifierValue": { 
+            "description": "Literal identifier value", 
+            "type": "string" 
+        }
+    }
+}

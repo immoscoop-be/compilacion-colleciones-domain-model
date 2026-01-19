@@ -1,0 +1,45 @@
+{
+    "meta": {
+        "domain": "email",
+        "version": "0.1.0",
+        "description": "Domain vocabulary for email delivery and engagement events."
+    },
+    "extends": [
+        "identity"
+    ],
+    "entities": {
+        "email": {
+            "description": "An email message sent to a subject.",
+            "identifiers": {
+                "emailId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Canonical email identifier."
+                }
+            },
+            "actions": {
+                "delivered": {
+                    "description": "Email was delivered."
+                },
+                "processed": {
+                    "description": "Email was processed by the provider."
+                },
+                "clicked": {
+                    "description": "Email was clicked."
+                },
+                "bounced": {
+                    "description": "Email bounced."
+                },
+                "opened": {
+                    "description": "Email was opened."
+                },
+                "dropped": {
+                    "description": "Email was dropped."
+                },
+                "deferred": {
+                    "description": "Email delivery was deferred."
+                }
+            }
+        }
+    }
+}

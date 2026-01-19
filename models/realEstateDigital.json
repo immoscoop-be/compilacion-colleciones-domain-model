@@ -1,0 +1,357 @@
+{
+    "meta": {
+        "domain": "realEstateDigital",
+        "version": "0.1.0",
+        "description": "Domain vocabulary for digital presentation of real estate listings."
+    },
+    "extends": [
+        "realEstate",
+        "activation",
+        "web",
+        "email"
+    ],
+    "entities": {
+        "listingPresentation": {
+            "extends": [
+                "touchpoint",
+                "listing"
+            ],
+            "description": "Digital presentation of a listing across web, email, or other channels.",
+            "actions": {
+                "shared": {
+                    "description": "A listing presentation was shared.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "requiredContext": [
+                        "shareChannel"
+                    ]
+                },
+                "favorited": {
+                    "description": "A listing presentation was marked as a favorite.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                }
+            }
+        },
+        "listingLead": {
+            "description": "A lead initiated for a specific listing.",
+            "identifiers": {
+                "listingLeadId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Canonical listing lead identifier."
+                }
+            },
+            "actions": {
+                "submitted": {
+                    "description": "A subject submitted a lead for a listing.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "requiredContext": [
+                        "contactChannel"
+                    ],
+                    "references": [
+                        {
+                            "type": "belongsTo",
+                            "target": "listing",
+                            "description": "Listing the contact request is about.",
+                            "cardinality": "one"
+                        }
+                    ]
+                }
+            }
+        },
+        "listingImage": {
+            "description": "An image associated with a listing presentation.",
+            "identifiers": {
+                "listingImageId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Canonical listing image identifier."
+                }
+            },
+            "actions": {
+                "viewed": {
+                    "description": "A listing image was viewed.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                },
+                "opened": {
+                    "description": "A listing image was opened in detail.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                },
+                "swiped": {
+                    "description": "A listing image was swiped in the gallery.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                },
+                "zoomed": {
+                    "description": "A listing image was zoomed.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                },
+                "downloaded": {
+                    "description": "A listing image was downloaded.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                },
+                "shared": {
+                    "description": "A listing image was shared.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                }
+            }
+        },
+        "listingCollection": {
+            "extends": [
+                "touchpoint"
+            ],
+            "description": "A collection of listings presented together (results, feed, or curated set).",
+            "actions": {
+                "viewed": {
+                    "description": "A listing collection was viewed.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "references": [
+                        {
+                            "type": "contains",
+                            "target": "listing",
+                            "description": "Listings included in the collection.",
+                            "cardinality": "many"
+                        }
+                    ]
+                },
+                "scrolled": {
+                    "description": "A listing collection was scrolled.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "references": [
+                        {
+                            "type": "contains",
+                            "target": "listing",
+                            "description": "Listings included in the collection.",
+                            "cardinality": "many"
+                        }
+                    ]
+                },
+                "filtered": {
+                    "description": "A listing collection was filtered.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "references": [
+                        {
+                            "type": "contains",
+                            "target": "listing",
+                            "description": "Listings included in the collection.",
+                            "cardinality": "many"
+                        }
+                    ]
+                },
+                "snoozed": {
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                },
+                "engaged": {
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                },
+                "dismissed": {
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                }
+            }
+        },
+        "listingDigestEmail": {
+            "extends": [
+                "email"
+            ],
+            "description": "An email containing a digest of listings relevant to the recipient.",
+            "actions": {
+                "sent": {
+                    "description": "A listing digest email was sent.",
+                    "references": [
+                        {
+                            "type": "contains",
+                            "target": "listing",
+                            "description": "Listings included in the digest email.",
+                            "cardinality": "many"
+                        }
+                    ]
+                }
+            }
+        },
+        "listingSearch": {
+            "description": "A search for listings performed by a subject.",
+            "identifiers": {
+                "listingSearchId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Canonical listing search identifier."
+                }
+            },
+            "actions": {
+                "submitted": {
+                    "description": "A listing search was submitted.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "requiredContext": [
+                        "searchQuery"
+                    ],
+                    "optionalContext": [
+                        "searchFilters",
+                        "searchSort",
+                        "resultCount"
+                    ]
+                }
+            }
+        },
+        "listingEngagement": {
+            "description": "User interaction with a listing presentation.",
+            "extends": [
+                "listing"
+            ],
+            "actions": {
+                "opened": {
+                    "description": "A listing element was opened.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "requiredContext": [
+                        "engagementTarget"
+                    ]
+                },
+                "closed": {
+                    "description": "A listing element was closed.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "requiredContext": [
+                        "engagementTarget"
+                    ]
+                },
+                "toggled": {
+                    "description": "A listing element was toggled.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "requiredContext": [
+                        "engagementTarget",
+                        "engagementState"
+                    ]
+                },
+                "clicked": {
+                    "description": "A listing element was clicked.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "requiredContext": [
+                        "engagementTarget"
+                    ]
+                }
+            }
+        },
+        "appraisal": {
+            "extends": [
+                "appraisal"
+            ],
+            "actions": {
+                "requested": {
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                }
+            }
+        }
+    },
+    "contexts": {
+        "contactChannel": {
+            "description": "Channel used to initiate contact.",
+            "type": "enum",
+            "values": [
+                "email",
+                "phone",
+                "form",
+                "chat"
+            ]
+        },
+        "shareChannel": {
+            "description": "Channel used to share a listing presentation.",
+            "type": "enum",
+            "values": [
+                "copyLink",
+                "email",
+                "sms",
+                "whatsapp",
+                "social"
+            ]
+        },
+        "searchQuery": {
+            "description": "Raw search query string.",
+            "type": "json"
+        },
+        "searchFilters": {
+            "description": "Serialized filters applied to the search.",
+            "type": "string"
+        },
+        "searchSort": {
+            "description": "Sort applied to the search results.",
+            "type": "string"
+        },
+        "resultCount": {
+            "description": "Number of results returned.",
+            "type": "integer"
+        },
+        "engagementTarget": {
+            "description": "The listing element involved in the interaction.",
+            "type": "string"
+        },
+        "engagementState": {
+            "description": "State used for toggle interactions.",
+            "type": "enum",
+            "values": [
+                "open",
+                "closed",
+                "on",
+                "off"
+            ]
+        }
+    }
+}

@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import { listAvailableModels, loadDomainModel } from './loaders/modelLoader.js';
+import { DomainModelManager } from './loaders/DomainModelManager.js';
 import { loadExporter, listAvailableExporters } from './exporters/exporterLoader.js';
 
 
@@ -19,23 +19,18 @@ export const optionsSchema = {
 };
 
 export async function build(options = {}) {
-  const modelNameList = (options.model) ? modelList.push(options.model): listAvailableModels();
-  const exporters = listAvailableExporters();
-  const models = [];
-  modelNameList.forEach(modelName => {
-    models.push( loadDomainModel(modelName) );
-  });
-  models.forEach(async (model)=>{
-    console.log(`Build model ${model.meta.domain} V${model.meta.version}`);
-    exporters.forEach(async (exporter)=> {
-      console.log(`\t Export to ${exporter}`);
-      let exporterClass = await loadExporter(exporter);
-      let exporterInstance = new exporterClass()
-      exporterInstance.preBuildHook();
-      exporterInstance.build(model);
-      exporterInstance.postBuildHook();
-    });
-  });
+  const manager = new DomainModelManager({ modelNames: options.model ? [options.model] : undefined });
+  for (const model of manager.loadAll()) {
+    // console.log(`Build model ${model.meta.domain} V${model.meta.version}`);
+    for (const exporterName of listAvailableExporters()) {
+      // console.log(`\tExport model to exporter '${exporterName}'`);
+      const ExporterClass = await loadExporter(exporterName);
+      const exporter = await new ExporterClass();
+      exporter.preBuildHook();
+      exporter.build( JSON.parse(JSON.stringify(model)) );
+      exporter.postBuildHook();
+    }
+  }
 }
 
 // if runned directly from command line
@@ -45,6 +40,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     options: optionsSchema,
     allowPositionals: true,
   });
-  console.log( 'values.model', values.model );
   build();
 }

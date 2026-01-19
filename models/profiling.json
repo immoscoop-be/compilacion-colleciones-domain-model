@@ -1,0 +1,93 @@
+{
+    "meta": {
+        "domain": "profiling",
+        "version": "0.1.0",
+        "description": "Explicit profiling signals declared or indicated by a subject."
+    },
+    "extends": [
+        "identity"
+    ],
+    "entities": {
+        "profilingSignal": {
+            "description": "Explicit, traceable signals about a subject's interests or traits.",
+            "identifiers": {
+                "profilingSignalId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Canonical profiling signal identifier."
+                }
+            },
+            "actions": {
+                "declared": {
+                    "description": "The subject explicitly states the interest; no interpretation is required",
+                    "performedBy": [
+                        "subject"
+                    ],
+                    "requiredContext": [
+                        "interestTopic",
+                        "confidence",
+                        "signalStrength",
+                        "sourceEvent"
+                    ],
+                    "optionalContext": [
+                        "signalRationale"
+                    ]
+                },
+                "indicated": {
+                    "description": "The subject does not state the interest; it is inferred from observed behavior.",
+                    "performedBy": [
+                        "subject"
+                    ],
+                    "requiredContext": [
+                        "interestTopic",
+                        "confidence",
+                        "signalStrength",
+                        "sourceEvent"
+                    ],
+                    "optionalContext": [
+                        "signalRationale"
+                    ]
+                },
+                "dismissed": {
+                    "description": "A profiling signal was rejected or invalidated.",
+                    "performedBy": [
+                        "subject"
+                    ],
+                    "requiredContext": [
+                        "interestTopic"
+                    ],
+                    "optionalContext": [
+                        "signalRationale"
+                    ]
+                }
+            }
+        }
+    },
+    "contexts": {
+        "interestTopic": {
+            "description": "Canonical topic key the signal is about.",
+            "type": "string"
+        },
+        "confidence": {
+            "description": "Confidence score for the signal.",
+            "type": "number"
+        },
+        "signalStrength": {
+            "description": "Observed strength of the signal.",
+            "type": "enum",
+            "values": [
+                "weak",
+                "medium",
+                "strong"
+            ]
+        },
+        "sourceEvent": {
+            "description": "Event or action that motivated the signal.",
+            "type": "string"
+        },
+        "signalRationale": {
+            "description": "Short explanation for why the signal was added.",
+            "type": "string"
+        }
+    }
+}

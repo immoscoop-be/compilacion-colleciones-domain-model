@@ -1,0 +1,215 @@
+{
+    "meta": {
+        "domain": "activation",
+        "version": "0.1.0",
+        "description": "Domain vocabulary for activation touchpoints, placement surfaces, campaign grouping and decisioning metadata."
+    },
+    "extends": [
+        "identity"
+    ],
+    "entities": {
+        "touchpoint": {
+            "description": "A concrete activation unit delivered to a subject (e.g. banner, nudge, modal, push).",
+            "identifiers": {
+                "touchpointId": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Canonical touchpoint identifier."
+                }
+            },
+            "adjectives": {},
+            "actions": {
+                "viewed": {
+                    "description": "Touchpoint became visible.",
+                    "performedBy": [
+                        "subject"
+                    ],
+                    "references": [
+                        {
+                            "type": "belongsTo",
+                            "target": "campaign",
+                            "description": "Campaign grouping.",
+                            "cardinality": "many"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "surface",
+                            "description": "Placement surface.",
+                            "cardinality": "one"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "experiment",
+                            "description": "Decisioning experiment.",
+                            "cardinality": "many"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "variant",
+                            "description": "Decisioning variant.",
+                            "cardinality": "one"
+                        }
+                    ]
+                },
+                "engaged": {
+                    "description": "Touchpoint was interacted with.",
+                    "performedBy": [
+                        "subject"
+                    ],
+                    "references": [
+                        {
+                            "type": "belongsTo",
+                            "target": "campaign",
+                            "description": "Campaign grouping.",
+                            "cardinality": "many"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "surface",
+                            "description": "Placement surface.",
+                            "cardinality": "one"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "experiment",
+                            "description": "Decisioning experiment.",
+                            "cardinality": "many"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "variant",
+                            "description": "Decisioning variant.",
+                            "cardinality": "one"
+                        }
+                    ]
+                },
+                "dismissed": {
+                    "description": "Touchpoint was dismissed.",
+                    "performedBy": [
+                        "subject"
+                    ],
+                    "references": [
+                        {
+                            "type": "belongsTo",
+                            "target": "campaign",
+                            "description": "Campaign grouping.",
+                            "cardinality": "many"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "surface",
+                            "description": "Placement surface.",
+                            "cardinality": "one"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "experiment",
+                            "description": "Decisioning experiment.",
+                            "cardinality": "many"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "variant",
+                            "description": "Decisioning variant.",
+                            "cardinality": "one"
+                        }
+                    ]
+                },
+                "snoozed": {
+                    "description": "Touchpoint was postponed by the subject.",
+                    "performedBy": [
+                        "subject"
+                    ],
+                    "references": [
+                        {
+                            "type": "belongsTo",
+                            "target": "campaign",
+                            "description": "Campaign grouping.",
+                            "cardinality": "many"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "surface",
+                            "description": "Placement surface.",
+                            "cardinality": "one"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "experiment",
+                            "description": "Decisioning experiment.",
+                            "cardinality": "many"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "variant",
+                            "description": "Decisioning variant.",
+                            "cardinality": "one"
+                        }
+                    ]
+                }
+            }
+        },
+        "surface": {
+            "description": "Stable conceptual placement where touchpoints can appear.",
+            "identifiers": {
+                "surfaceId": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        },
+        "campaign": {
+            "description": "Identifier grouping touchpoints under a shared activation intent.",
+            "identifiers": {
+                "campaignId": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Campaign identifier."
+                }
+            },
+            "actions": {
+                "observed": {
+                    "description": "Campaign identifier observed in activation traffic.",
+                    "requiredContext": [],
+                    "optionalContext": [
+                        "campaignName",
+                        "campaignObjective",
+                        "campaignType"
+                    ]
+                }
+            }
+        },
+        "experiment": {
+            "description": "Decisioning construct for experimentation or personalisation.",
+            "identifiers": {
+                "experimentId": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        },
+        "variant": {
+            "description": "Decisioning variant identifier within an experiment.",
+            "identifiers": {
+                "variantId": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        }
+    },
+    "contexts": {
+        "campaignName": {
+            "description": "Campaign name (snapshot).",
+            "type": "string"
+        },
+        "campaignObjective": {
+            "description": "Campaign objective label (snapshot).",
+            "type": "string"
+        },
+        "campaignType": {
+            "description": "Campaign classification label (snapshot).",
+            "type": "string"
+        }
+    }
+}

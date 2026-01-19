@@ -1,0 +1,35 @@
+import Exporter from '../Exporter.js';
+import { fileURLToPath } from 'node:url';
+
+class Typescript extends Exporter {
+    constructor() {
+        super();
+    }
+
+    build(model) {
+        super.build(model);
+        let entities = Object.keys(this.model.entities);
+        entities.forEach(entityName => {
+            console.log(`Generating TypeScript for entity: ${entityName}`);
+            this.generateEntityTypeScript(this.model.entities[entityName]);
+        });
+    }
+
+    generateEntityTypeScript(entity) {
+        let tsCode = '';
+        tsCode += `// TypeScript definition for entity: ${entity.name}\n`;
+        tsCode += `//   identifiers\n`;
+        if(entity?.identifiers && entity.identifiers.keys.length > 0) {
+            let identifiersInterfaceName = `${entity.name}Identifiers`;
+            tsCode += `export interface ${identifiersInterfaceName} {\n`;
+            entity.identifiers.keys.forEach(idField => {
+                // tsCode += `    ${idField.name}${}: ${this.mapFieldTypeToTsType(idField.type)};\n`;
+            });
+            tsCode += `}\n`;
+        }
+        console.log(tsCode);
+    }
+
+}
+
+export default Typescript;

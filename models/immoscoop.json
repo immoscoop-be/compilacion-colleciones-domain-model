@@ -1,0 +1,80 @@
+{
+    "meta": {
+        "domain": "immoscoop",
+        "version": "0.1.0",
+        "description": "Domain vocabulary for Immoscoop real estate platform."
+    },
+    "extends": [
+        "realEstateDigital"
+    ],
+    "entities": {
+        "loanSimulation": {
+            "description": "A mortgage/loan simulation for a property purchase.",
+            "identifiers": {
+                "loanSimulationId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Canonical loan simulation identifier."
+                }
+            },
+            "actions": {
+                "generated": {
+                    "description": "A loan simulation was generated.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "references": [
+                        {
+                            "type": "belongsTo",
+                            "target": "listing",
+                            "description": "Listing the simulation is based on.",
+                            "cardinality": "one"
+                        }
+                    ]
+                },
+                "updated": {
+                    "description": "A loan simulation was updated.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ],
+                    "references": [
+                        {
+                            "type": "belongsTo",
+                            "target": "listing",
+                            "description": "Listing the simulation is based on.",
+                            "cardinality": "one"
+                        }
+                    ]
+                }
+            }
+        },
+        "loanProfile": {
+            "description": "A loan profile containing financial and personal inputs for simulations or applications.",
+            "identifiers": {
+                "loanProfileId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Canonical loan profile identifier."
+                }
+            },
+            "actions": {
+                "created": {
+                    "description": "A loan profile was created.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                },
+                "updated": {
+                    "description": "A loan profile was updated.",
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                }
+            }
+        }
+    }
+}

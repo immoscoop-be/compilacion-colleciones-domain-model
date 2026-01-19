@@ -34,6 +34,17 @@ class Gtm extends Exporter {
 
     buildTagTemplate(entityName, entity, actionName, action) {
         let fileName = `Colleciones_Event__${entityName}_${actionName}.tpl`;
+        /*
+        touchpoint
+        snoozed
+        surfaceIsRelatedp
+        
+        if ((entityName == "touchpoint" && actionName == "snoozed") == false) {
+            return;
+        }
+        console.log(this.model.meta.domain);
+        console.log(`Building GTM tag template for event '${actionName}' on entity '${entityName}'`);
+        */
         this.tagTemplate = new GtmTagTemplate();
         this.tagTemplate.setWebPermissions( this.tagWebpermissions );
         this.entityName = entityName;
@@ -46,6 +57,8 @@ class Gtm extends Exporter {
         this.tagTemplate.setVersion(1);
         this.gtmJs = `const log = require('logToConsole');\n`;
         this.gtmJs += `let o = {};\n`;
+        this.gtmJs += `o.entity = '${entityName}';\n`;
+        this.gtmJs += `o.action = '${actionName}';\n`;
         this.setupIntroduction();
         this.setupIdentifiers();
         this.setupActors();
@@ -119,7 +132,7 @@ class Gtm extends Exporter {
             this.gtmJs += `if(data.${dd.getName()} == "${actor}") {\n`;
             identifiersName.forEach(identifierName => {
                 let identifier = actorEntity.identifiers[identifierName];
-                let identifierInput = this.tagTemplate.getTextInput('actor_identifier_' + identifierName, identifierName);
+                let identifierInput = this.tagTemplate.getTextInput('actor' + actor + '_identifier_' + identifierName, identifierName);
                 this.gtmJs += `\to.actor.identifiers.${actor}.${identifierName} = data.${identifierInput.getName()};\n`;
                 if (identifier.description) {
                     identifierInput.setHelp(identifier.description);
@@ -132,6 +145,7 @@ class Gtm extends Exporter {
     }
 
     setupContext() {
+        if (this.action.requiredContext === undefined && this.action.optionalContext === undefined ) return;  
         if (this.action.requiredContext?.length < 1 && this.action.optionalContext?.length < 1) return;
         let group = this.tagTemplate.addGroup('ContextGroup', `Context of the event`);
         group.setColapsable(false);

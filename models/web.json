@@ -1,0 +1,319 @@
+{
+    "meta": {
+        "domain": "web",
+        "version": "0.1.0",
+        "description": "Domain vocabulary for browser-based interactions: visitors, sessions, pages, interactions and consent."
+    },
+    "extends": [
+        "identity",
+        "activation",
+        "profiling"
+    ],
+    "entities": {
+        "visitor": {
+            "extends": [
+                "subject"
+            ],
+            "description": "Web channel subject (anonymous or identified).",
+            "identifiers": {
+                "visitorId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Canonical visitor identifier (typically cookie- or device-based)."
+                }
+            },
+            "actions": {
+                "discovered": {
+                    "description": "First time this visitor is observed.",
+                    "optionalContext": [
+                        "userAgent",
+                        "deviceType",
+                        "language",
+                        "referrer",
+                        "utmSource",
+                        "utmMedium",
+                        "utmCampaign"
+                    ]
+                }
+            }
+        },
+        "session": {
+            "description": "A bounded browsing context for a visitor.",
+            "identifiers": {
+                "sessionId": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Canonical session identifier."
+                }
+            },
+            "adjectives": {
+                "engaged": {
+                    "description": "Session reached engagement threshold."
+                }
+            },
+            "actions": {
+                "start": {
+                    "description": "Session started.",
+                    "performedBy": [
+                        "visitor",
+                        "subject"
+                    ]
+                },
+                "engaged": {
+                    "description": "Session crossed engagement threshold.",
+                    "performedBy": [
+                        "visitor",
+                        "subject"
+                    ],
+                    "optionalContext": [
+                        "engagementType",
+                        "engagementValue"
+                    ]
+                }
+            }
+        },
+        "page": {
+            "description": "A rendered web page within a session.",
+            "identifiers": {
+                "pageId": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Canonical page identifier (stable across URL variations)."
+                }
+            },
+            "adjectives": {},
+            "actions": {
+                "viewed": {
+                    "description": "Page was viewed.",
+                    "performedBy": [
+                        "visitor"
+                    ],
+                    "requiredContext": [
+                        "url"
+                    ],
+                    "optionalContext": [
+                        "pageType",
+                        "referrer",
+                        "language",
+                        "viewportWidth",
+                        "viewportHeight",
+                        "marketingMedium",
+                        "marketingSource",
+                        "marketingTerm",
+                        "marketingContent",
+                        "marketingCampaign",
+                        "marketingNetwork",
+                        "marketingNetworkClickId"
+                    ],
+                    "references": [
+                        {
+                            "type": "belongsTo",
+                            "target": "session",
+                            "description": "Session context.",
+                            "cardinality": "one"
+                        }
+                    ]
+                }
+            }
+        },
+        "interaction": {
+            "description": "A named user interaction occurring within a page and session.",
+            "identifiers": {
+                "interactionId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Optional identifier for deduplication or correlation."
+                }
+            },
+            "adjectives": {},
+            "actions": {
+                "performed": {
+                    "description": "An interaction occurred.",
+                    "performedBy": [
+                        "visitor"
+                    ],
+                    "requiredContext": [
+                        "interactionName"
+                    ],
+                    "optionalContext": [
+                        "interactionType",
+                        "interactionTarget",
+                        "interactionValue"
+                    ],
+                    "references": [
+                        {
+                            "type": "belongsTo",
+                            "target": "page",
+                            "description": "Page context.",
+                            "cardinality": "one"
+                        },
+                        {
+                            "type": "belongsTo",
+                            "target": "session",
+                            "description": "Session context.",
+                            "cardinality": "one"
+                        }
+                    ]
+                }
+            }
+        },
+        "consent": {
+            "description": "Consent state and changes for tracking and personalisation.",
+            "identifiers": {
+                "consentId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Optional identifier from CMP or consent framework."
+                }
+            },
+            "actions": {
+                "set": {
+                    "description": "Consent granted.",
+                    "performedBy": [
+                        "visitor"
+                    ],
+                    "optionalContext": [
+                        "consentProvider",
+                        "consentCategories"
+                    ]
+                }
+            }
+        },
+        "profilingSignal": {
+            "actions": {
+                "declared": {
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                },
+                "indicated": {
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                },
+                "dismissed": {
+                    "performedBy": [
+                        "subject",
+                        "visitor"
+                    ]
+                }
+            }
+        }
+    },
+    "actors": [
+        "visitor"
+    ],
+    "contexts": {
+        "url": {
+            "description": "Full page URL.",
+            "type": "url"
+        },
+        "pageType": {
+            "description": "Logical page template/type.",
+            "type": "string"
+        },
+        "referrer": {
+            "description": "Referrer URL.",
+            "type": "url"
+        },
+        "language": {
+            "description": "Browser language.",
+            "type": "string"
+        },
+        "userAgent": {
+            "description": "Browser user agent.",
+            "type": "string"
+        },
+        "deviceType": {
+            "description": "Device class.",
+            "type": "enum",
+            "values": [
+                "desktop",
+                "mobile",
+                "tablet"
+            ]
+        },
+        "viewportWidth": {
+            "description": "Viewport width in pixels.",
+            "type": "integer"
+        },
+        "viewportHeight": {
+            "description": "Viewport height in pixels.",
+            "type": "integer"
+        },
+        "engagementType": {
+            "description": "Engagement milestone type.",
+            "type": "string"
+        },
+        "engagementValue": {
+            "description": "Engagement milestone value.",
+            "type": "number"
+        },
+        "interactionName": {
+            "description": "Stable semantic name for the interaction.",
+            "type": "string"
+        },
+        "interactionType": {
+            "description": "Interaction category (e.g. click, submit, scroll).",
+            "type": "string"
+        },
+        "interactionTarget": {
+            "description": "Logical target of the interaction.",
+            "type": "string"
+        },
+        "interactionValue": {
+            "description": "Optional interaction value (e.g. query, selected option).",
+            "type": "string"
+        },
+        "utmSource": {
+            "description": "UTM source.",
+            "type": "string"
+        },
+        "utmMedium": {
+            "description": "UTM medium.",
+            "type": "string"
+        },
+        "utmCampaign": {
+            "description": "UTM campaign.",
+            "type": "string"
+        },
+        "consentProvider": {
+            "description": "Consent provider/CMP identifier.",
+            "type": "string"
+        },
+        "consentCategories": {
+            "description": "Granted consent categories.",
+            "type": "array"
+        },
+        "marketingSource": {
+            "description": "UTM source of equivalent traffic origin (google, newsletter, meta, partner)",
+            "type": "string"
+        },
+        "marketingMedium": {
+            "description": "UTM medium / channel category (cpc, email, social, referral)",
+            "type": "string"
+        },
+        "marketingCampaign": {
+            "description": "UTM campaign identifier or name",
+            "type": "string"
+        },
+        "marketingTerm": {
+            "description": "UTM term / paid search keyword",
+            "type": "string"
+        },
+        "marketingContent": {
+            "description": "UTM content / creative variant label",
+            "type": "string"
+        },
+        "marketingNetwork": {
+            "description": "Ad network slot (e.g. google-search, google-display, meta-feed)",
+            "type": "string"
+        },
+        "marketingNetworkClickId": {
+            "description": "Ad platform click id (gclid/fbclid/msclkid/etc.)",
+            "type": "string"
+        }
+    }
+}

@@ -1,252 +1,80 @@
 {
     "meta": {
-        "domain": "realEstate",
+       "domain": "realEstate",
         "version": "0.1.0",
-        "description": "Domain vocabulary for the residential real-estate journey."
+        "description": "Domain vocabulary for real estate properties and related actions."
     },
+    "extends": [
+        "identity"
+    ],
     "entities": {
         "property": {
-            "description": "A residential unit that can be listed for sale or rent.",
+            "description": "A real estate property such as a house, apartment, or commercial building.",
             "identifiers": {
                 "propertyId": {
-                    "type": "uuid",
-                    "required": true,
-                    "description": "Internal canonical id."
-                },
-                "mlsNumber": {
                     "type": "string",
-                    "description": "External listing system id."
+                    "required": true,
+                    "description": "Canonical property identifier."
                 }
-            },
-            "adjectives": {
-                "newlyBuilt": {
-                    "description": "Completed within the last 24 months."
-                },
-                "featured": {
-                    "description": "Promoted property on the landing page."
-                },
-                "sold": {
-                    "description": "Property contract is signed."
-                },
-                "available": {
-                    "description": "Property is currently on the market."
-                }
-            },
-            "actions": {
-                "viewed": {
-                    "description": "a property has been viewed.",
-                    "performedBy": [
-                        "visitor",
-                        "prospect"
-                    ],
-                    "requiredContext": [
-                        "sourcePage"
-                    ],
-                    "optionalContext": [
-                        "deviceType",
-                        "campaign"
-                    ],
-                    "references": [
-                        {
-                            "type": "belongsTo",
-                            "target": "agency",
-                            "description": "Listing agent or office responsible.",
-                            "cardinality": "one"
-                        },
-                        {
-                            "type": "isPartOf",
-                            "target": "project",
-                            "description": "Can be part of a project.",
-                            "cardinality": "one"
-                        },
-                        {
-                            "type": "contains",
-                            "target": "unit",
-                            "description": "Units when the property is a project.",
-                            "cardinality": "many"
-                        }
-                    ],
-                    "schema": "UserInteractionEvent"
-                },
-                "favourited": {
-                    "description": "User marks the property as a favourite.",
-                    "performedBy": [
-                        "user"
-                    ],
-                    "requiredContext": [
-                        "sourcePage"
-                    ],
-                    "resultingState": [
-                        "favourite"
-                    ],
-                    "schema": "UserInteractionEvent"
-                },
-                "statusChanged": {
-                    "description": "The listing status of the property has changed.",
-                    "performedBy": [
-                        "agent",
-                        "system"
-                    ],
-                    "requiredContext": [
-                        "previousStatus",
-                        "newStatus"
-                    ],
-                    "resultingState": [
-                        "available",
-                        "sold"
-                    ],
-                    "schema": "DomainChangeEvent"
+            }
+        },
+        "listing": {
+            "description": "A listing of a property for sale or rent.",
+            "extends": [
+                "property"
+            ],
+            "identifiers": {
+                "listingId": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Canonical listing identifier."
                 }
             }
         },
         "agency": {
-            "description": "Company or office representing properties.",
+            "description": "A real estate agency or brokerage.",
+            "extends": [
+                "subject"
+            ],
             "identifiers": {
                 "agencyId": {
-                    "type": "uuid",
-                    "required": true
-                },
-                "externalId": {
-                    "type": "string"
-                }
-            },
-            "actions": {
-                "profileViewed": {
-                    "performedBy": [
-                        "visitor",
-                        "prospect"
-                    ],
-                    "optionalContext": [
-                        "sourcePage"
-                    ],
-                    "schema": "UserInteractionEvent"
-                }
-            }
-        },
-        "visitor": {
-            "description": "Anonymous or first-time person visiting the platform.",
-            "identifiers": {
-                "sessionId": {
                     "type": "string",
                     "required": true,
-                    "description": "Session or cookie identifier."
+                    "description": "Canonical agency identifier."
+                }
+            }
+        },
+        "office": {
+            "description": "A real estate office location.",
+            "extends": [
+                "subject"
+            ],
+            "identifiers": {
+                "officeId": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Canonical office identifier."
+                }
+            }
+        },
+        "appraisal": {
+            "description": "A property appraisal.",
+            "identifiers": {
+                "appraisalId": {
+                    "type": "string",
+                    "required": false,
+                    "description": "Canonical appraisal identifier."
                 }
             },
             "actions": {
-                "browsedListings": {
-                    "description": "Visitor browsed property listings.",
+                "requested": {
+                    "description": "An appraisal was requested.",
                     "performedBy": [
-                        "visitor"
-                    ],
-                    "requiredContext": [
-                        "sourcePage"
-                    ],
-                    "optionalContext": [
-                        "deviceType",
-                        "campaign"
-                    ],
-                    "references": [
-                        {
-                            "type": "contains",
-                            "target": "property",
-                            "description": "Properties viewed during the session.",
-                            "cardinality": "many"
-                        }
-                    ],
-                    "schema": "UserInteractionEvent"
-                }
-            } 
-            
-        },
-        "prospect": {
-            "description": "Potential buyer or tenant interacting with listings.",
-            "identifiers": {
-                "prospectId": {
-                    "type": "uuid",
-                    "required": true
-                },
-                "email": {
-                    "type": "string"
-                }
-            },
-            "adjectives": {
-                "verified": {
-                    "description": "Contact details verified."
-                }
-            }
-            
-        },
-        "project": {
-            "description": "Grouped development that contains multiple properties or units.",
-            "identifiers": {
-                "projectId": {
-                    "type": "uuid",
-                    "required": true
-                }
-            }
-        },
-        "unit": {
-            "description": "An individual living unit within a development.",
-            "identifiers": {
-                "unitId": {
-                    "type": "uuid",
-                    "required": true
-                }
-            }
-            
-        },
-        "mediaAsset": {
-            "description": "Images, videos or floorplans belonging to a property.",
-            "identifiers": {
-                "assetId": {
-                    "type": "uuid",
-                    "required": true
-                }
-            }
-        },
-        "systemProcess": {
-            "description": "Internal automation or integration that can mutate domain state.",
-            "identifiers": {
-                "processId": {
-                    "type": "string"
+                        "subject"
+                    ]
                 }
             }
         }
-    },
-    "actors": [
-        "visitor",
-        "prospect",
-        "user",
-        "agency",
-        "system"
-    ],
-    "contexts": {
-        "sourcePage": {
-            "description": "Page or screen where the action originated.",
-            "type": "url"
-        },
-        "deviceType": {
-            "description": "Browser, mobile, tablet, etc.",
-            "type": "enum",
-            "values": [
-                "desktop",
-                "mobile",
-                "tablet"
-            ]
-        },
-        "campaign": {
-            "description": "Marketing campaign id driving the visit.",
-            "type": "string"
-        }
-    },
-    "schemas": {
-        "UserInteractionEvent": {
-            "description": "Generic schema for user interactions in the UI.",
-            "version": "1.0"
-        },
-        "DomainChangeEvent": {
-            "description": "Schema for changes initiated within the domain (state transitions).",
-            "version": "1.0"
-        }
+        
     }
 }

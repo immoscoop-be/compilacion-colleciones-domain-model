@@ -25,7 +25,7 @@ class Exporter {
     build(model) {
         this.model = model;
         this.resetExporter();
-        this.generateRelationshipMap();
+        // this.generateRelationshipMap();
     }
 
     getDir() {
@@ -35,8 +35,7 @@ class Exporter {
     }
 
     resetExporter() {
-        let exporterDir = path.join(buildDir, this.constructor.name.toLowerCase());
-        fs.rmSync(exporterDir , { recursive: true, force: true });
+        fs.rmSync(this.getDir() , { recursive: true, force: true });
     }
 
     writefile(filename, contents) {
@@ -54,6 +53,7 @@ class Exporter {
             let actions = entity.actions;
             if(typeof actions !== 'object') return;
             let actionNames = Object.keys(actions);
+            let setSouces = {};
             actionNames.forEach( actionName => {
                 let action = actions[actionName];
                 let performers = action.performedBy || [];
@@ -77,13 +77,14 @@ class Exporter {
                         "cardinality": reference.cardinality || "one"
                     });
                 });
-                
+                // setSouces[]
             });
         });
         this.model['relationships'] = {};
         refs.forEach( ref => {
             let refName = `${ref.source}--${ref.event}-->${ref.type}-->${ref.target}`;
             this.model['relationships'][refName] = ref;
+            
             if(this.model.entities[ref.source]){
                 if( !this.model.entities[ref.source]['outgoingRelationships'] ) {
                     this.model.entities[ref.source]['outgoingRelationships'] = [];

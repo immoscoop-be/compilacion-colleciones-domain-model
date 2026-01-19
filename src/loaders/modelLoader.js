@@ -41,12 +41,11 @@ export function loadDomainModel(modelName) {
   if (!modelName) {
     throw new Error('Missing domain model name.');
   }
-
   const modelPath = path.join(modelsDir, `${modelName}.json`);
   if (!fs.existsSync(modelPath)) {
     throw new Error(`Domain model not found at ${modelPath}`);
   }
-
+  // console.log(`Loading domain model "${modelName}" from ${modelPath}`);
   const raw = fs.readFileSync(modelPath, 'utf-8');
   let parsed;
   try {
@@ -55,7 +54,17 @@ export function loadDomainModel(modelName) {
     throw new Error(`Failed to parse JSON for model "${modelName}" at ${modelPath}: ${error.message}`);
   }
 
-  validateDomainModel(parsed, { modelName, modelPath });
+  // model path
+  const modelDescriptionPath = path.join(modelsDir, `${modelName}.md`);
+  if( fs.existsSync(modelDescriptionPath) ) {
+    const description = fs.readFileSync(modelDescriptionPath, 'utf-8');
+    const jsonSafe = description
+        .replace(/\\/g, '\\\\')   // escape backslashes
+        .replace(/\r\n/g, '\n')   // normalize CRLF → LF
+        .replace(/\n/g, '\\n'); 
+    parsed.meta.extendedDescription = jsonSafe;
+  }
+
   return parsed;
 }
 
