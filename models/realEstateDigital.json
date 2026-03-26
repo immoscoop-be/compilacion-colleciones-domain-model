@@ -176,18 +176,42 @@
                     "performedBy": [
                         "subject",
                         "visitor"
+                    ],
+                    "references": [
+                        {
+                            "type": "contains",
+                            "target": "listing",
+                            "description": "Listings included in the collection.",
+                            "cardinality": "many"
+                        }
                     ]
                 },
                 "engaged": {
                     "performedBy": [
                         "subject",
                         "visitor"
+                    ],
+                    "references": [
+                        {
+                            "type": "contains",
+                            "target": "listing",
+                            "description": "Listings included in the collection.",
+                            "cardinality": "many"
+                        }
                     ]
                 },
                 "dismissed": {
                     "performedBy": [
                         "subject",
                         "visitor"
+                    ],
+                    "references": [
+                        {
+                            "type": "contains",
+                            "target": "listing",
+                            "description": "Listings included in the collection.",
+                            "cardinality": "many"
+                        }
                     ]
                 }
             }
@@ -199,12 +223,12 @@
             "description": "An email containing a digest of listings relevant to the recipient.",
             "actions": {
                 "sent": {
-                    "description": "A listing digest email was sent.",
+                    "description": "A listing collection was sent.",
                     "references": [
                         {
                             "type": "contains",
                             "target": "listing",
-                            "description": "Listings included in the digest email.",
+                            "description": "Listings included in the collection.",
                             "cardinality": "many"
                         }
                     ]

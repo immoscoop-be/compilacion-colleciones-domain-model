@@ -55,7 +55,7 @@ class Gtm extends Exporter {
         this.tagTemplate.setDisplayName(`Colleciones Event - ${this.model.meta.domain} - ${entityName} - ${actionName}`);
         this.tagTemplate.setDescription(action.description || `Tag template for action '${actionName}' on entity '${entityName}'`);
         this.tagTemplate.setVersion(1);
-        this.gtmJs = `const log = require('logToConsole');\n`;
+        this.gtmJs = ``;
         this.gtmJs += `let o = {};\n`;
         this.gtmJs += `o.entity = '${entityName}';\n`;
         this.gtmJs += `o.action = '${actionName}';\n`;
@@ -67,8 +67,7 @@ class Gtm extends Exporter {
         this.setupRelations();
         this.setupCollections();
         this.setupTrackerInit();
-        this.gtmJs += "log('o =', o);"
-        this.tagTemplate.setScript(this.gtmJs);
+        this.writeScript();
         this.writefile(fileName, this.tagTemplate.getFile());
     }
 
@@ -430,6 +429,24 @@ class Gtm extends Exporter {
 
         // write
         this.writefile(`Colleciones_ConfigVar.tpl`, configVariableFile.getFile());
+    }
+
+    writeScript() {
+        let codeSuffix = readFileSync(join(__dirname, '../../../assets/gtm/codeSuffix.js'), 'utf8');
+        let gtm = '';
+        gtm = `var log = require('logToConsole');\n`;
+        gtm = `var callInWindow = require('callInWindow');\n`;
+        gtm = `var copyFromWindow = require('copyFromWindow');\n`;
+        gtm = `var createQueue = require('createQueue');\n`;
+        gtm = `var injectScript = require('injectScript');\n`;
+        gtm = `var log = require('logToConsole');\n`;
+        gtm = `var setInWindow = require('setInWindow');\n`;
+        gtm += this.gtmJs;
+        // gtm += codeSuffix;
+        gtm += "\n";
+        // gtm += "log('o =', o);"
+        this.tagTemplate.setScript(gtm);
+        
     }
 
 }

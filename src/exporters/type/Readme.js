@@ -182,6 +182,18 @@ class Readme extends Exporter {
                 } else {
                     this.addParagraph(pageName, this.italic('(This action is not performed by an actor.)'));
                 }
+                // references
+                if(action.references && action.references.length > 0 ) {
+                    this.addParagraph(pageName, this.bold('References:'));
+                    action.references.forEach( reference => {
+                        let targetLink = this.getPageLink('entity_' + reference.target, reference.target);
+                        this.addParagraph(pageName, 
+                            `  (${reference.type}, ${reference.cardinality}) to ${targetLink}` +
+                            (reference.description?`: ${reference.description}`:'')
+                        );
+                    });
+                    let refRows = [];
+                }
                 // requiredContext
                 if(action.requiredContext && action.requiredContext.length > 0 ) {
                     let requiredContextPrint = [];
