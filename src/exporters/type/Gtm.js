@@ -249,6 +249,7 @@ class Gtm extends Exporter {
         // setupType
         // the field in which the user decides how the collection is gathered
         let gatheringMethod = this.tagTemplate.getDropDown(collection.target + 'GatheringMethod', `Collection gathering method`);
+        gatheringMethod.addItem('Array', 'Javascript array');
         gatheringMethod.addItem('evaluated', 'Evaluated javascript array');
         gatheringMethod.addItem('paramTable', 'Manual entry (param table)');
         gatheringMethod.addCondition(condition);
@@ -308,9 +309,23 @@ class Gtm extends Exporter {
         Object.keys(identifiers).forEach((identifierName) => {
             fieldIdentifierType.addItem(identifierName, identifierName);
         });
-        pt.addColumn(collection.target + 'ParamTableIdentifierNameColumn', 'Identifier type', fieldIdentifierType.getObject(), true);
+        pt.addColumn(collection.target + 'ParamTableIdentifierNameColumn', 'Identifier type', fieldIdentifierType.getObject(), false);
         let fieldIdentifierValue = this.tagTemplate.getTextInput(collection.target + 'IdentifierValueParamTable', 'Identifier value');
         pt.addColumn(collection.target + 'ParamTableIdentifierValueColumn', 'Identifier value', fieldIdentifierValue.getObject(), false);
+        // Array
+        // Array / IdentifierField: 
+        //     the identifier to use
+        let arrayIdentifierField = this.tagTemplate.getDropDown(collection.target + 'ArrayIdentifierField', 'Identifier');
+        arrayIdentifierField.addCondition(this.tagTemplate.createCondition(gatheringMethod.getName(), 'Array'));
+        Object.keys(identifiers).forEach((identifierName) => {
+            arrayIdentifierField.addItem(identifierName, identifierName);
+        });
+        collectionGroup.addItem(arrayIdentifierField);
+        // Array / IdentifierField: 
+        let arrayField = this.tagTemplate.getTextInput(collection.target + 'ArrayField', `Javascript array of identifiers`);
+        arrayField.addCondition(this.tagTemplate.createCondition(gatheringMethod.getName(), 'Array'));
+        arrayField.setHelp(`A javascript expression that evaluates to an array of identifiers or an array of objects containing the identifiers for the '${collection.target}'-entity. If it's an array of objects, make sure to specify the path to the identifiers with the 'Path to items in array' field.`);
+        collectionGroup.addItem(arrayField);
         // gtm
         let gtm = '';
         gtm += `\n` + `if(data.${cb.getName()} ) {`;
@@ -318,6 +333,10 @@ class Gtm extends Exporter {
         gtm += `\n\t` + `if(data.${gatheringMethod.getName()} == "paramTable") {`;
         gtm += `\n\t\t` + `o.collections.${collection.target}.type = "PARAMTABLE";`;
         gtm += `\n\t\t` + `o.collections.${collection.target}.table = data.${pt.getName()};`;
+        gtm += `\n\t` + `} else if(data.${gatheringMethod.getName()} == "Array") {`;
+        gtm += `\n\t\t` + `o.collections.${collection.target}.type = "ARRAY";`;
+        gtm += `\n\t\t` + `o.collections.${collection.target}.identifierField = data.${arrayIdentifierField.getName()};`;
+        gtm += `\n\t\t` + `o.collections.${collection.target}.array = data.${arrayField.getName()};`;
         gtm += `\n\t` + `} else if(data.${gatheringMethod.getName()} == "evaluated") {`;
         gtm += `\n\t\t` + `o.collections.${collection.target}.type = "EVALUATED";`;
         gtm += `\n\t\t` + `o.collections.${collection.target}.identifierField = data.${evaluatedIdentifierField.getName()};`;
@@ -434,17 +453,17 @@ class Gtm extends Exporter {
     writeScript() {
         let codeSuffix = readFileSync(join(__dirname, '../../../assets/gtm/codeSuffix.js'), 'utf8');
         let gtm = '';
-        gtm = `var log = require('logToConsole');\n`;
-        gtm = `var callInWindow = require('callInWindow');\n`;
-        gtm = `var copyFromWindow = require('copyFromWindow');\n`;
-        gtm = `var createQueue = require('createQueue');\n`;
-        gtm = `var injectScript = require('injectScript');\n`;
-        gtm = `var log = require('logToConsole');\n`;
-        gtm = `var setInWindow = require('setInWindow');\n`;
+        gtm += `var log = require('logToConsole');\n`;
+        gtm += `var callInWindow = require('callInWindow');\n`;
+        gtm += `var copyFromWindow = require('copyFromWindow');\n`;
+        gtm += `var createQueue = require('createQueue');\n`;
+        gtm += `var injectScript = require('injectScript');\n`;
+        gtm += `var log = require('logToConsole');\n`;
+        gtm += `var setInWindow = require('setInWindow');\n`;
         gtm += this.gtmJs;
         // gtm += codeSuffix;
         gtm += "\n";
-        // gtm += "log('o =', o);"
+        gtm += "log(o);"
         this.tagTemplate.setScript(gtm);
         
     }
