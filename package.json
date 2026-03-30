@@ -13,7 +13,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
-    "@compilacion/colleciones-clientos": "^2.0.11",
+    "@compilacion/colleciones-clientos": "^2.0.13",
     "ajv": "^8.17.1",
     "markdown-it": "^14.1.0",
     "vitest": "^1.6.0"
