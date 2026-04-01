@@ -196,6 +196,107 @@
                     "required": true
                 }
             }
+        },
+        "goal": {
+            "description": "A specific, measurable business objective that an activation flow or touchpoint aims to achieve.",
+            "identifiers": {
+                "goalId": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Unique identifier for the business goal (e.g., 'listing_creation', 'lead_gen')."
+                }
+            },
+            "actions": {
+                "achieved": {
+                    "description": "The business goal has been successfully reached.",
+                    "performedBy": ["subject"],
+                    "references": [
+                        { "type": "belongsTo", "target": "campaign", "cardinality": "many" }
+                    ]
+                }
+            }
+        },
+        "flow": {
+            "description": "A deterministic, predefined business process consisting of a sequence of functional steps.",
+            "identifiers": {
+                "flowId": { "type": "string", "required": true }
+            },
+            "actions": {
+                "initiated": {
+                    "description": "The subject has formally entered the process.",
+                    "performedBy": ["subject"],
+                    "references": [
+                        { "type": "aimsAt", "target": "goal", "cardinality": "one" }
+                    ]
+                },
+                "paused": {
+                    "description": "The process was temporarily halted with the intent to return later. State is preserved.",
+                    "performedBy": ["subject"]
+                },
+                "resumed": {
+                    "description": "The subject returned to a previously initiated or paused process.",
+                    "performedBy": ["subject"]
+                },
+                "abandoned": {
+                    "description": "The subject left the process without the intent to return, or the session timed out.",
+                    "performedBy": ["subject"]
+                },
+                "finalized": {
+                    "description": "The flow reached its deterministic conclusion, fulfilling the intended goal.",
+                    "performedBy": ["subject"],
+                    "references": [
+                        { "type": "achieves", "target": "goal", "cardinality": "one" }
+                    ]
+                },
+                "restarted": {
+                    "description": "The subject chose to reset the process and start again from the first step.",
+                    "performedBy": ["subject"],
+                    "references": [
+                        { "type": "aimsAt", "target": "goal", "cardinality": "one" }
+                    ]
+                }
+            }
+        },
+        "flowStep": {
+            "description": "A functional, atomic unit of work within a deterministic flow requiring specific subject interaction or system validation.",
+            "identifiers": {
+                "stepId": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Stable functional identifier for the step (e.g., 'property_details_input')."
+                }
+            },
+            "actions": {
+                "entered": {
+                    "description": "The step was presented to the subject. This marks the start of the interaction with this specific phase.",
+                    "performedBy": ["subject", "system"],
+                    "references": [
+                        { "type": "belongsTo", "target": "flow", "cardinality": "one", "description": "The parent flow instance this step belongs to." },
+                        { "type": "belongsTo", "target": "surface", "cardinality": "one" }
+                    ]
+                },
+                "completed": {
+                    "description": "The subject has successfully fulfilled the requirements of this step (e.g., form submitted and validated).",
+                    "performedBy": ["subject", "system"],
+                    "references": [
+                        { "type": "belongsTo", "target": "flow", "cardinality": "one" }
+                    ]
+                },
+                "skipped": {
+                    "description": "The subject moved to a subsequent step without interacting with or fulfilling this step's requirements.",
+                    "performedBy": ["subject", "system"],
+                    "references": [
+                        { "type": "belongsTo", "target": "flow", "cardinality": "one" }
+                    ]
+                },
+                "failed": {
+                    "description": "A functional or technical error occurred that prevents the subject from completing the step.",
+                    "performedBy": ["subject", "system"],
+                    "references": [
+                        { "type": "belongsTo", "target": "flow", "cardinality": "one" }
+                    ]
+                }
+            }
         }
     },
     "contexts": {

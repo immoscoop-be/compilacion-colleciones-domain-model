@@ -200,6 +200,52 @@
                     ]
                 }
             }
+        },
+        "webFlow": {
+            "description": "A deterministic, predefined business process consisting of a sequence of functional steps specific for web applications.",
+            "extends": [
+                "flow"
+            ],
+            "actions": {
+                 "initiated": {
+                    "performedBy": ["subject", "visitor"]
+                },
+                "paused": {
+                    "performedBy": ["subject", "visitor"]
+                },
+                "resumed": {
+                    "performedBy": ["subject", "visitor"]
+                },
+                "abandoned": {
+                    "performedBy": ["subject", "visitor"]
+                },
+                "finalized": {
+                    "performedBy": ["subject", "visitor"]
+                },
+                "restarted": {
+                    "performedBy": ["subject", "visitor"]
+                }
+            }
+        },
+        "webFlowStep": {
+            "description": "A functional, atomic unit of work within a deterministic flow requiring specific subject interaction or system validation specific for web applications.",
+            "extends": [
+                "flowStep"
+            ],
+            "actions": {
+                 "entered": {
+                    "performedBy": ["subject", "visitor"]
+                },
+                 "completed": {
+                    "performedBy": ["subject", "visitor"]
+                },
+                 "skipped": {
+                    "performedBy": ["subject", "visitor"]
+                },
+                 "failed": {
+                    "performedBy": ["subject", "visitor"]
+                }
+            }
         }
     },
     "actors": [

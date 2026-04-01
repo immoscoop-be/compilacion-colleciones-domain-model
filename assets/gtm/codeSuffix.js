@@ -6,7 +6,7 @@ function getQueuePush() {
     if (existing) {
         return existing;
     }
-    log('Creating new queue for', queueName);
+    logToConsole('Creating new queue for', queueName);
     createQueue(queueName);
     setInWindow(queuePusherName, function () {
         var args = [];
@@ -19,7 +19,7 @@ function getQueuePush() {
         };
         callInWindow(queueName + '.push', queued);
         callInWindow('window.compilacionCollecionesClientosGtmFlush', '');
-        log('Queued method call:', queued);
+        logToConsole('Queued method call:', queued);
     });
     return copyFromWindow(queuePusherName);
 }
@@ -36,22 +36,22 @@ if (data.trackerConfig.type === "compilacionCollecionesClientosGtmVariable_confi
         injectScript(
             cdn,
             function () {
-                log('Script loaded. Executing tag.');
+                logToConsole('Script loaded. Executing tag.');
                 queuePush('tag', data);
                 data.gtmOnSuccess();
             },
             function () {
-                log('Failed to load script:', cdn);
+                logToConsole('Failed to load script:', cdn);
                 data.gtmOnFailure();
             },
             'compilacionCollecionesLib'
         );
     } else {
-        log('No script URL provided. Falling back to direct queue push.');
+        logToConsole('No script URL provided. Falling back to direct queue push.');
         queuePush('tag', data);
         data.gtmOnSuccess();
     }
 } else {
-    log('trackerConfig.type mismatch:', data.trackerConfig.type);
+    logToConsole('trackerConfig.type mismatch:', data.trackerConfig.type);
     data.gtmOnFailure();
 }

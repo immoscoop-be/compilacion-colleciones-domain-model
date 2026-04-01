@@ -1,5 +1,5 @@
 import Exporter from '../Exporter.js';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import GtmTagTemplate from '../../utils/GtmTagTemplate.js';
@@ -7,6 +7,10 @@ import GtmTagTemplate from '../../utils/GtmTagTemplate.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const FILTERS_OPERATORS = ['==', '===', '!=', '!==', '>', '>=', '<', '<='];
+const clientosDistDir = join(__dirname, '../../../node_modules/@compilacion/colleciones-clientos/dist');
+const sandboxConfigScriptPath = join(clientosDistDir, 'browser.domainModel.gtm.config.sandbox.js');
+const sandboxRequirePath = join(clientosDistDir, 'browser.domainModel.gtm.sandbox.require.json');
+const sandboxScriptPath = join(clientosDistDir, 'browser.domainModel.gtm.sandbox.js');
 
 class Gtm extends Exporter {
     constructor() {
@@ -413,7 +417,7 @@ class Gtm extends Exporter {
         jsLibSource.addItem('SELF', 'Self-hosted');
         jsLibSource.addItem('NOLOAD', 'Do not load');
         jsTrackerGroup.addItem(jsLibSource);
-        let jsLibSource_selfHostedUrl = configVariableFile.getTextInput('jsLibSourc_selfHostedUrl', `Url of self hosted JS lib`);
+        let jsLibSource_selfHostedUrl = configVariableFile.getTextInput('jsLibSource_selfHostedUrl', `Url of self hosted JS lib`);
         jsLibSource_selfHostedUrl.addCondition(configVariableFile.createCondition( jsLibSource.getName(), 'SELF' ));
         jsTrackerGroup.addItem(jsLibSource_selfHostedUrl);
         
@@ -434,16 +438,15 @@ class Gtm extends Exporter {
         batchingSettingsGroup.addItem( flushSizeField );
         
         // script
-        let script = `return {
-            type: 'compilacionCollecionesClientosGtmVariable_configuracion',
-            endpoint: data.${endpointField.getName()},
-            flushInterval: data.${flushIntervalField.getName()},
-            flushSize: data.${flushSizeField.getName()},
-            trackerName: data.${trackerNameField.getName()},
-            appName: data.${appNameField.getName()},
-            jsLibSource: data.${jsLibSource.getName()},
-            jsLibSource_selfHostedUrl: data.${jsLibSource_selfHostedUrl.getName()}
-        };`;
+        let script = this.getSandboxConfigScript(
+            endpointField.getName(),
+            flushIntervalField.getName(),
+            flushSizeField.getName(),
+            trackerNameField.getName(),
+            appNameField.getName(),
+            jsLibSource.getName(),
+            jsLibSource_selfHostedUrl.getName(),
+        );
         configVariableFile.setScript(script);
 
         // write
@@ -451,21 +454,87 @@ class Gtm extends Exporter {
     }
 
     writeScript() {
-        let codeSuffix = readFileSync(join(__dirname, '../../../assets/gtm/codeSuffix.js'), 'utf8');
         let gtm = '';
-        gtm += `var log = require('logToConsole');\n`;
-        gtm += `var callInWindow = require('callInWindow');\n`;
-        gtm += `var copyFromWindow = require('copyFromWindow');\n`;
-        gtm += `var createQueue = require('createQueue');\n`;
-        gtm += `var injectScript = require('injectScript');\n`;
-        gtm += `var log = require('logToConsole');\n`;
-        gtm += `var setInWindow = require('setInWindow');\n`;
+        gtm += this.getSandboxRequireDeclarations();
         gtm += this.gtmJs;
-        // gtm += codeSuffix;
-        gtm += "\n";
-        gtm += "log(o);"
+        const sandboxScript = this.getSandboxScript();
+        if (sandboxScript) {
+            gtm += "\n";
+            gtm += sandboxScript;
+            gtm += "\n";
+            gtm += `collecionesClientos(data.trackerConfig).push(o);\n`;
+        } 
         this.tagTemplate.setScript(gtm);
         
+    }
+
+    getSandboxRequireDeclarations() {
+        const fallbackLibraries = [
+            'callInWindow',
+            'copyFromWindow',
+            'createQueue',
+            'injectScript',
+            'logToConsole',
+            'setInWindow',
+        ];
+
+        let libraries = fallbackLibraries;
+        if (existsSync(sandboxRequirePath)) {
+            try {
+                const parsed = JSON.parse(readFileSync(sandboxRequirePath, 'utf8'));
+                if (Array.isArray(parsed.requiredLibrary) && parsed.requiredLibrary.length > 0) {
+                    libraries = [...new Set(parsed.requiredLibrary)];
+                }
+            } catch (error) {
+                libraries = fallbackLibraries;
+            }
+        }
+
+        return libraries
+            .map((libraryName) => `var ${libraryName} = require('${libraryName}');\n`)
+            .join('');
+    }
+
+    getSandboxScript() {
+        if (!existsSync(sandboxScriptPath)) {
+            return '';
+        }
+
+        let script = readFileSync(sandboxScriptPath, 'utf8');
+        script = script.replace(
+            `'configVariable': 'compilacionCollecionesClientosGtmTypeCastConfig'`,
+            `'queue': 'compilacionCollecionesClientosGtmQueue',\n            'configVariable': 'compilacionCollecionesClientosGtmTypeCastConfig'`,
+        );
+        script = script.replace(
+            'cdn = data.trackerConfig.jsLibSource_selfHostedUrl;',
+            'cdn = configObject.jsLibUrl;',
+        );
+        script = script.replace(
+            'createQueue(nameSpaces.sharedWindowObjectNames.queue)',
+            'createQueue(constants.sharedWindowObjectNames.queue)',
+        );
+        script = script.replace(
+            'https://unpkg.com/@compilacion/colleciones-clientos@latest/dist/browser.gtm.min.js',
+            'https://unpkg.com/@compilacion/colleciones-clientos@latest/dist/browser.domainModel.gtm.js',
+        );
+        return script;
+    }
+
+    getSandboxConfigScript(endpointField, flushIntervalField, flushSizeField, trackerNameField, appNameField, jsLibSourceField, jsLibUrlField) {
+        if (!existsSync(sandboxConfigScriptPath)) {
+            return ;
+        }
+        let script = readFileSync(sandboxConfigScriptPath, 'utf8');
+        script += `\nreturn collecionesClientosGtmConfigSandbox.getConfigObject(`;
+        script += `data.${endpointField}, `;
+        script += `data.${flushIntervalField}, `;
+        script += `data.${flushSizeField}, `;
+        script += `data.${trackerNameField}, `;
+        script += `data.${appNameField}, `;
+        script += `data.${jsLibSourceField}, `;
+        script += `data.${jsLibUrlField}`;
+        script += `);\n`;
+        return script;
     }
 
 }

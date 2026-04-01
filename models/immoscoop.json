@@ -37,7 +37,8 @@
                     "description": "A loan simulation was updated.",
                     "performedBy": [
                         "subject",
-                        "visitor"
+                        "visitor",
+                        "system"
                     ],
                     "references": [
                         {
@@ -71,7 +72,8 @@
                     "description": "A loan profile was updated.",
                     "performedBy": [
                         "subject",
-                        "visitor"
+                        "visitor",
+                        "system" 
                     ]
                 }
             }
