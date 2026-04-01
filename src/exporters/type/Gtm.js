@@ -499,24 +499,7 @@ class Gtm extends Exporter {
         if (!existsSync(sandboxScriptPath)) {
             return '';
         }
-
         let script = readFileSync(sandboxScriptPath, 'utf8');
-        script = script.replace(
-            `'configVariable': 'compilacionCollecionesClientosGtmTypeCastConfig'`,
-            `'queue': 'compilacionCollecionesClientosGtmQueue',\n            'configVariable': 'compilacionCollecionesClientosGtmTypeCastConfig'`,
-        );
-        script = script.replace(
-            'cdn = data.trackerConfig.jsLibSource_selfHostedUrl;',
-            'cdn = configObject.jsLibUrl;',
-        );
-        script = script.replace(
-            'createQueue(nameSpaces.sharedWindowObjectNames.queue)',
-            'createQueue(constants.sharedWindowObjectNames.queue)',
-        );
-        script = script.replace(
-            'https://unpkg.com/@compilacion/colleciones-clientos@latest/dist/browser.gtm.min.js',
-            'https://unpkg.com/@compilacion/colleciones-clientos@latest/dist/browser.domainModel.gtm.js',
-        );
         return script;
     }
 
